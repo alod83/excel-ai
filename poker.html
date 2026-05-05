@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI & Excel Card Game — Opponent Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#c62828;--blue:#1565c0;--green:#2e7d32;--orange:#e65100;--bg:#fff;--soft:#f7f7f7;--line:rgba(0,0,0,.12);--text:#111;--muted:#666;--font-h:'Barlow Condensed',sans-serif;--font-b:'Source Sans 3',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-b);background:#fff;color:var(--text)}body:before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,0,0,.03) 39px,rgba(0,0,0,.03) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,0,0,.03) 39px,rgba(0,0,0,.03) 40px);z-index:0;pointer-events:none}#app{max-width:1120px;margin:auto;padding:0 16px 36px;position:relative;z-index:1}header{text-align:center;padding:24px 0 18px;border-bottom:3px solid var(--red);margin-bottom:22px}.oreilly-logo{font-family:var(--font-h);font-weight:800;color:var(--red);letter-spacing:.18em;font-size:13px;margin-bottom:8px}h1{font-family:var(--font-h);font-size:36px;line-height:1;font-weight:800}.tagline{font-size:12px;color:var(--red);font-weight:700;margin-top:6px}.info-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;align-items:stretch;margin-bottom:16px}.score-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 16px;display:flex;gap:22px;flex-wrap:wrap}.score-item{text-align:center}.score-val{font-family:var(--font-h);font-size:28px;font-weight:800;color:var(--red)}.score-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.phase-row{display:flex;gap:6px;justify-content:center;margin-bottom:16px}.phase-dot{font-family:var(--font-h);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:12px;background:#eee;color:#666;border:1px solid var(--line);border-radius:20px;padding:4px 14px}.phase-dot.active{background:var(--red);border-color:var(--red);color:#fff}.section-label{font-family:var(--font-h);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:10px;font-weight:700}.zone{background:#fafafa;border:1px solid rgba(0,0,0,.09);border-radius:14px;padding:16px;margin-bottom:14px}.cards-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.card{width:100px;height:140px;border-radius:10px;position:relative;flex-shrink:0;transition:.2s;user-select:none}.card.clickable{cursor:pointer}.card.clickable:hover{transform:translateY(-8px)}.card.selected{transform:translateY(-14px);box-shadow:0 0 0 2px var(--red),0 8px 32px rgba(198,40,40,.25)}.card-inner{width:100%;height:100%;border-radius:10px;overflow:hidden;background:#fff;border:1.5px solid rgba(0,0,0,.13);display:flex;flex-direction:column}.c-header{padding:5px 7px 4px;display:flex;justify-content:space-between;align-items:center;color:#fff}.c-suit-name{font-size:7.5px;font-weight:800;letter-spacing:.04em}.c-wf{font-size:6.5px;opacity:.85}.c-pill{margin:5px 6px 4px;border-radius:10px;padding:2px 0;display:flex;align-items:center;justify-content:center;gap:4px}.c-pill-dot{width:5px;height:5px;border-radius:50%}.c-pill-label{font-size:7.5px;font-weight:800}.c-icon-wrap{flex:1;display:flex;align-items:center;justify-content:center}.c-icon-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-size:22px;font-weight:800}.c-body{padding:3px 6px;font-size:6.2px;color:#333;text-align:center;line-height:1.35}.c-footer{padding:2.5px 6px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:5.5px;font-weight:800}.suit-chatgpt{background:#c62828}.suit-copilot{background:#1565c0}.suit-python{background:#2e7d32}.suit-addins{background:#e65100}.light-chatgpt{background:#ffebee;color:#c62828}.light-copilot{background:#e3f2fd;color:#1565c0}.light-python{background:#e8f5e9;color:#2e7d32}.light-addins{background:#fff3e0;color:#e65100}.pill-problem{background:#e3f2fd}.dot-problem{background:#1565c0}.txt-problem{color:#0c447c}.pill-context{background:#e0f7fa}.dot-context{background:#00838f}.txt-context{color:#004d56}.pill-main{background:#fffde7}.dot-main{background:#f57f17}.txt-main{color:#633806}.pill-action{background:#f3e5f5}.dot-action{background:#7b1fa2}.txt-action{color:#4a148c}.pill-output{background:#eceff1}.dot-output{background:#37474f}.txt-output{color:#1c313a}.card.facedown{background:#f6f6f6;border:1.5px solid rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center}.card.facedown:after{content:'?';font-family:var(--font-h);font-size:34px;color:rgba(0,0,0,.18)}.community-zone{display:flex;gap:8px;justify-content:center;min-height:145px;align-items:center;flex-wrap:wrap}.community-slot{width:100px;height:140px;border-radius:10px;border:1.5px dashed rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.2);font-size:24px}.players-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.result-line{margin-top:10px;text-align:center;border-radius:10px;padding:10px;background:#f6f6f6;border:1px solid var(--line);font-weight:700}.result-line strong{font-family:var(--font-h);font-size:22px;color:var(--red)}.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}.btn{font-family:var(--font-h);font-size:15px;font-weight:800;padding:10px 22px;border-radius:8px;border:1.5px solid transparent;cursor:pointer;letter-spacing:.06em;text-transform:uppercase}.btn-primary{background:var(--red);color:#fff;border-color:var(--red)}.btn-outline{background:#fff;color:#111;border-color:rgba(0,0,0,.2)}.btn-danger{background:#fff;color:var(--red);border-color:var(--red)}.btn:disabled{opacity:.45;cursor:not-allowed}.bet-row{display:flex;gap:8px;align-items:center;justify-content:center;margin:10px 0}.bet-val{font-family:var(--font-h);font-size:24px;font-weight:800;color:var(--red);min-width:50px;text-align:center}.log{background:#f7f7f7;border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:12px;color:var(--muted);max-height:110px;overflow:auto;line-height:1.7}.log span{color:#111}.gold{color:var(--red);font-weight:800}.rankings{background:#fafafa;border:1px solid rgba(0,0,0,.09);border-radius:14px;padding:16px;margin-top:14px}.rank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:8px;margin-top:10px}.rank-item{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px 12px}.rank-name{font-family:var(--font-h);font-size:13px;font-weight:800}.rank-desc{font-size:10px;color:var(--muted);margin-top:2px}.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100}.modal-bg.open{display:flex}.modal{background:#fff;border:2px solid var(--red);border-radius:16px;padding:28px 32px;max-width:460px;width:90%;text-align:center}.modal h2{font-family:var(--font-h);font-size:36px}.modal .big{font-family:var(--font-h);font-size:48px;font-weight:800;color:var(--red);margin:12px}.modal p{color:var(--muted);line-height:1.5}@media(max-width:820px){.players-grid{grid-template-columns:1fr}.score-box{width:100%;justify-content:space-around}.card{width:92px;height:132px}}
+.site-nav{display:flex;justify-content:center;align-items:center;gap:1rem;margin:16px auto 22px;padding:1rem 1.25rem;border:1px solid rgba(0,0,0,.12);border-radius:999px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);box-shadow:0 18px 48px rgba(46,26,18,.08);position:sticky;top:1rem;z-index:20}.nav-links{display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap}.nav-link{text-decoration:none;padding:.7rem 1rem;border-radius:999px;color:var(--muted);font-weight:700;transition:background .18s ease,color .18s ease}.nav-link:hover,.nav-link-current{background:rgba(198,40,40,.1);color:var(--red)}.game-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:center;margin-bottom:20px}.cover-frame{padding:1rem;border:1px solid rgba(0,0,0,.09);border-radius:18px;background:linear-gradient(180deg,#fff,#fbf7f2);box-shadow:0 18px 48px rgba(46,26,18,.08)}.book-cover{display:block;width:100%;max-width:320px;margin:0 auto;border-radius:12px}.cover-note{margin-top:10px;text-align:center;color:var(--muted);font-size:12px;line-height:1.5}.game-copy{text-align:center;padding:24px 0 18px;border-bottom:3px solid var(--red)}.game-copy h1{font-family:var(--font-h);font-size:36px;line-height:1;font-weight:800}.game-copy .tagline{font-size:12px;color:var(--red);font-weight:700;margin-top:6px}.game-copy .oreilly-logo{font-family:var(--font-h);font-weight:800;color:var(--red);letter-spacing:.18em;font-size:13px;margin-bottom:8px}@media(max-width:820px){.players-grid{grid-template-columns:1fr}.score-box{width:100%;justify-content:space-around}.card{width:92px;height:132px}.site-nav{border-radius:28px}.game-hero{grid-template-columns:1fr}.game-copy{text-align:center}.book-cover{max-width:260px}}
+</style>
+</head>
+<body>
+<div id="app">
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="contents.html">Table of Contents</a>
+    <a class="nav-link" href="applied-fiction.html">Applied Fiction</a>
+    <a class="nav-link" href="activities.html">Activities</a>
+    <a class="nav-link" href="posts.html">Posts</a>
+    <a class="nav-link" href="buy.html">Buy</a>
+    <a class="nav-link" href="author.html">The Author</a>
+  </div>
+</nav>
+
+<header class="game-hero">
+  <div class="game-copy">
+    <div class="oreilly-logo">O'REILLY<sup>®</sup></div>
+    <h1>AI & Excel <span style="color:var(--red)">Card Game</span></h1>
+    <div class="tagline">Opponent mode · Poker-style Prompt Workflows</div>
+  </div>
+  <div class="cover-frame">
+    <img class="book-cover" src="images/cover.jpg" alt="Cover of Learning Generative AI Tools for Excel">
+    <div class="cover-note">From the companion activities of <em>Learning Generative AI Tools for Excel</em>.</div>
+  </div>
+</header>
+
+<div class="info-row">
+  <div class="score-box">
+    <div class="score-item"><div class="score-val" id="coins">100</div><div class="score-lbl">Your Coins</div></div>
+    <div class="score-item"><div class="score-val" id="oppcoins">100</div><div class="score-lbl">Opponent Coins</div></div>
+    <div class="score-item"><div class="score-val" id="round">1</div><div class="score-lbl">Round</div></div>
+    <div class="score-item"><div class="score-val" id="pot">0</div><div class="score-lbl">Pot</div></div>
+    <div class="score-item"><div class="score-val" id="oppstatus">—</div><div class="score-lbl">Opponent</div></div>
+  </div>
+  <button class="btn btn-outline" onclick="G.reset()">↻ Reset</button>
+</div>
+
+<div class="phase-row">
+  <div class="phase-dot active" id="ph-deal">Deal</div>
+  <div class="phase-dot" id="ph-flop">Flop</div>
+  <div class="phase-dot" id="ph-turn">Turn</div>
+  <div class="phase-dot" id="ph-river">River</div>
+  <div class="phase-dot" id="ph-showdown">Showdown</div>
+</div>
+
+<div class="zone">
+  <div class="section-label">Community Cards</div>
+  <div class="community-zone" id="community-zone"></div>
+</div>
+
+<div class="players-grid">
+  <div class="zone">
+    <div class="section-label">Your Hand — click cards to select for swap</div>
+    <div class="cards-row" id="player-hand"></div>
+    <div class="result-line">Your best hand: <strong id="your-best">—</strong><br><span id="your-score" style="font-size:12px;color:var(--muted)"></span></div>
+  </div>
+  <div class="zone">
+    <div class="section-label">Opponent Hand</div>
+    <div class="cards-row" id="opponent-hand"></div>
+    <div class="result-line">Opponent visible strength: <strong id="opp-best">—</strong><br><span id="opp-score" style="font-size:12px;color:var(--muted)">Hidden until showdown</span></div>
+  </div>
+</div>
+
+<div class="btn-row" id="action-btns"><button class="btn btn-primary" onclick="G.deal()">Deal Cards</button></div>
+<div class="bet-row" id="bet-row" style="display:none">
+  <button class="btn btn-outline" onclick="G.adjustBet(-5)">−5</button>
+  <div class="bet-val" id="bet-val">10</div>
+  <button class="btn btn-outline" onclick="G.adjustBet(5)">+5</button>
+  <span style="color:var(--muted);font-size:12px">bet</span>
+</div>
+<div class="log" id="log">Welcome! Deal to start. The opponent now has coins, a hidden hand, and a simple strategy.</div>
+
+<div class="rankings">
+  <div class="section-label">Hand Rankings</div>
+  <div class="rank-grid">
+    <div class="rank-item"><div class="rank-name">Royal Workflow</div><div class="rank-desc">All 5 types, same suit & same workflow</div></div>
+    <div class="rank-item"><div class="rank-name">Straight Workflow</div><div class="rank-desc">All 5 types, same suit</div></div>
+    <div class="rank-item"><div class="rank-name">Four of a Kind</div><div class="rank-desc">4 cards same type</div></div>
+    <div class="rank-item"><div class="rank-name">Full House</div><div class="rank-desc">3 of a kind + pair</div></div>
+    <div class="rank-item"><div class="rank-name">Flush</div><div class="rank-desc">5 cards same suit</div></div>
+    <div class="rank-item"><div class="rank-name">Straight</div><div class="rank-desc">Problem→Context→Main→Action→Output</div></div>
+    <div class="rank-item"><div class="rank-name">Three of a Kind</div><div class="rank-desc">3 cards same type</div></div>
+    <div class="rank-item"><div class="rank-name">Two Pair</div><div class="rank-desc">2 different pairs</div></div>
+    <div class="rank-item"><div class="rank-name">Pair</div><div class="rank-desc">2 cards same type</div></div>
+  </div>
+</div>
+</div>
+
+<div class="modal-bg" id="modal"><div class="modal"><div id="modal-emoji" style="font-size:40px"></div><h2 id="modal-title"></h2><div class="big" id="modal-score"></div><p id="modal-desc"></p><div class="btn-row"><button class="btn btn-primary" onclick="G.closeModal()">Continue</button></div></div></div>
+
+<script>
+const SUITS={chatgpt:{name:'CHATGPT',abbr:'CGT',col:'#c62828'},copilot:{name:'COPILOT',abbr:'CPL',col:'#1565c0'},python:{name:'PYTHON',abbr:'PYT',col:'#2e7d32'},addins:{name:'ADD-INS',abbr:'ADD',col:'#e65100'}};
+const TYPES={problem:{label:'Problem'},context:{label:'Context'},main:{label:'Main Point'},action:{label:'Action'},output:{label:'Output'}};
+const ICON={problem:'?',context:'▦',main:'◎',action:'⚙',output:'✓'};
+const ALL_CARDS=[
+['chatgpt',1,'problem','Missing values in dataset.'],['chatgpt',1,'context','Dataset in Excel with missing values in multiple columns.'],['chatgpt',1,'main','Identify missing values and determine the method.'],['chatgpt',1,'action','Use ChatGPT to suggest how to fill or remove missing values.'],['chatgpt',1,'output','Dataset with no missing values, correctly handled.'],['chatgpt',2,'problem','User does not know which Excel formula to use.'],['chatgpt',2,'context','Structured Excel table with numerical and categorical data.'],['chatgpt',2,'main','Generate the correct Excel formula for the metric.'],['chatgpt',2,'action','Describe the task in natural language to ChatGPT.'],['chatgpt',2,'output','Working Excel formula producing the expected result.'],
+['copilot',1,'problem','Analyze dataset quickly.'],['copilot',1,'context','Dataset already loaded in Excel as a formatted table.'],['copilot',1,'main','Summarize dataset to extract key metrics by category.'],['copilot',1,'action','Use Copilot to generate a PivotTable.'],['copilot',1,'output','PivotTable with aggregated values by categories.'],['copilot',2,'problem','Dataset contains duplicates or errors.'],['copilot',2,'context','Excel dataset with duplicate rows and inconsistent formatting.'],['copilot',2,'main','Remove duplicates and standardize formats.'],['copilot',2,'action','Use Copilot to detect duplicates and fix formatting.'],['copilot',2,'output','Dataset with no duplicates and consistent formatting.'],
+['python',1,'problem','Dataset too large to clean manually.'],['python',1,'context','Large Excel dataset with thousands of rows.'],['python',1,'main','Clean and standardize the dataset automatically.'],['python',1,'action','Write a Python script to process the dataset.'],['python',1,'output','Clean dataset with inconsistencies resolved.'],['python',2,'problem','Need automated data processing.'],['python',2,'context','Multiple datasets in different files to be combined.'],['python',2,'main','Create an automated workflow to process data.'],['python',2,'action','Use Python to load, merge, and analyze datasets.'],['python',2,'output','Automated pipeline combining and processing data.'],
+['addins',1,'problem','Dataset lacks important information.'],['addins',1,'context','Dataset missing key attributes from external sources.'],['addins',1,'main','Enrich the dataset by adding new relevant information.'],['addins',1,'action','Use an AI add-in to extract and append new data.'],['addins',1,'output','Dataset with additional consistent external columns.'],['addins',2,'problem','Text data is unstructured.'],['addins',2,'context','Dataset containing free-text entries in columns.'],['addins',2,'main','Transform unstructured text into structured fields.'],['addins',2,'action','Apply AI-based text transformation functions.'],['addins',2,'output','Text organized into structured columns, ready for analysis.']
+].map((x,i)=>({id:i,suit:x[0],wf:x[1],type:x[2],body:x[3]}));
+
+const G=(()=>{let deck=[],playerHand=[],oppHand=[],community=[],selected=[],coins=100,oppCoins=100,pot=0,round=1,phase='idle',bet=10,oppFolded=false,playerFolded=false,lastOpp='—',finalModalShown=false;
+const TYPE_VAL={problem:1,context:2,main:3,action:4,output:5};
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function counts(arr,fn){return arr.reduce((o,x)=>{const k=fn(x);o[k]=(o[k]||0)+1;return o},{})}
+function eval5(cards){if(!cards||cards.length<2)return {name:'High Card',pts:10,css:'hand-meh'};let types=cards.map(c=>c.type),suits=cards.map(c=>c.suit),wfs=cards.map(c=>c.wf),vals=cards.map(c=>TYPE_VAL[c.type]).sort((a,b)=>a-b),n=cards.length;let tCount=Object.values(counts(cards,c=>c.type)).sort((a,b)=>b-a),allSuit=suits.every(s=>s===suits[0]),allWf=wfs.every(w=>w===wfs[0]),straight=n===5&&vals.join(',')==='1,2,3,4,5';if(straight&&allSuit&&allWf)return {name:'Royal Workflow',pts:1000};if(straight&&allSuit)return {name:'Straight Workflow',pts:700};if(tCount[0]===4)return {name:'Four of a Kind',pts:600};if(tCount[0]===3&&tCount[1]===2)return {name:'Full House',pts:500};if(n>=5&&allSuit)return {name:'Flush',pts:400};if(straight)return {name:'Straight',pts:300};if(tCount[0]===3)return {name:'Three of a Kind',pts:200};if(tCount[0]===2&&tCount[1]===2)return {name:'Two Pair',pts:150};if(tCount[0]===2)return {name:'Pair',pts:100};return {name:'High Card',pts:10}}
+function best(hand,comm){let all=[...hand,...comm];if(all.length<=5)return eval5(all);let b={name:'High Card',pts:0};for(let i=0;i<all.length-4;i++)for(let j=i+1;j<all.length-3;j++)for(let k=j+1;k<all.length-2;k++)for(let l=k+1;l<all.length-1;l++)for(let m=l+1;m<all.length;m++){let h=eval5([all[i],all[j],all[k],all[l],all[m]]);if(h.pts>b.pts)b=h}return b}
+function cardHTML(c,idx,click=false){let s=SUITS[c.suit],t=c.type,sel=click&&selected.includes(idx)?'selected':'';return `<div class="card ${click?'clickable':''} ${sel}" ${click?`onclick="G.toggleSelect(${idx})"`:''}><div class="card-inner" style="border-color:${s.col}"><div class="c-header suit-${c.suit}"><span class="c-suit-name">${s.name}</span><span class="c-wf">W${c.wf}</span></div><div class="c-pill pill-${t}"><div class="c-pill-dot dot-${t}"></div><span class="c-pill-label txt-${t}">${TYPES[t].label}</span></div><div class="c-icon-wrap"><div class="c-icon-circle light-${c.suit}">${ICON[t]}</div></div><div class="c-body">${c.body}</div><div class="c-footer suit-${c.suit}"><span>${s.abbr}</span><span>W${c.wf}</span><span>${s.abbr}</span></div></div></div>`}
+function facedown(){return '<div class="card facedown"></div>'}
+function render(){document.getElementById('player-hand').innerHTML=playerHand.map((c,i)=>cardHTML(c,i,phase==='draw')).join('');document.getElementById('opponent-hand').innerHTML=phase==='showdown'||oppFolded?oppHand.map(c=>cardHTML(c,0,false)).join(''):oppHand.map(()=>facedown()).join('');let html='';for(let i=0;i<5;i++)html+=community[i]?cardHTML(community[i],i,false):'<div class="community-slot">+</div>';document.getElementById('community-zone').innerHTML=html;let yh=playerHand.length?best(playerHand,community):{name:'—',pts:''};let oh=oppHand.length?best(oppHand,community):{name:'—',pts:''};document.getElementById('your-best').textContent=yh.name;document.getElementById('your-score').textContent=yh.pts?`${yh.pts} pts potential`:'';document.getElementById('opp-best').textContent=(phase==='showdown'||oppFolded)?oh.name:opponentHint(oh.pts);document.getElementById('opp-score').textContent=(phase==='showdown'||oppFolded)?`${oh.pts} pts final`:'Estimated from betting behavior';document.getElementById('coins').textContent=coins;document.getElementById('oppcoins').textContent=oppCoins;document.getElementById('round').textContent=round;document.getElementById('pot').textContent=pot;document.getElementById('oppstatus').textContent=lastOpp;['deal','flop','turn','river','showdown'].forEach(p=>document.getElementById('ph-'+p).classList.toggle('active',p===phase));}
+function opponentHint(pts){if(!oppHand.length)return '—';if(lastOpp==='RAISE')return 'Strong';if(lastOpp==='CALL')return 'Medium';if(lastOpp==='CHECK')return 'Weak';return 'Hidden'}
+function log(msg){let el=document.getElementById('log');el.innerHTML=msg+'<br>'+el.innerHTML}
+function buttons(...bs){document.getElementById('action-btns').innerHTML=bs.map(b=>`<button class="btn ${b.cls}" onclick="${b.fn}" ${b.dis?'disabled':''}>${b.label}</button>`).join('');document.getElementById('bet-row').style.display=bs.some(b=>b.bet)?'flex':'none';}
+function pay(who,amount){amount=Math.max(0,amount); if(who==='player'){let a=Math.min(coins,amount);coins-=a;pot+=a;return a}else{let a=Math.min(oppCoins,amount);oppCoins-=a;pot+=a;return a}}
+function opponentDraw(){let h=best(oppHand,[]);let keepSuit=null,keepWf=null;let suitCounts=counts(oppHand,c=>c.suit),wfCounts=counts(oppHand,c=>c.suit+'-'+c.wf),typeCounts=counts(oppHand,c=>c.type);keepSuit=Object.entries(suitCounts).sort((a,b)=>b[1]-a[1])[0][0];keepWf=Object.entries(wfCounts).sort((a,b)=>b[1]-a[1])[0][0];let drawIdx=[];oppHand.forEach((c,i)=>{let good=c.suit===keepSuit||`${c.suit}-${c.wf}`===keepWf||typeCounts[c.type]>1;if(!good&&drawIdx.length<3)drawIdx.push(i)});drawIdx.forEach(i=>{if(deck.length)oppHand[i]=deck.pop()});log(`Opponent swaps ${drawIdx.length} card${drawIdx.length!==1?'s':''}.`)}
+function opponentDecision(stageCost){let h=best(oppHand,community),strength=h.pts;let roll=Math.random();let action='CHECK',raise=0;if(strength>=500||roll<0.12){action='RAISE';raise=Math.max(5,Math.round(bet/2));pay('opp',stageCost+raise)}else if(strength>=150||roll<0.72){action='CALL';pay('opp',stageCost)}else if(stageCost>0&&roll<0.35){action='FOLD';oppFolded=true}else{action='CHECK';pay('opp',Math.max(0,Math.round(stageCost/2)))}lastOpp=action; if(action==='RAISE')log(`Opponent raises. Estimated strength: <span class="gold">strong</span>.`); else if(action==='CALL')log('Opponent calls.'); else if(action==='FOLD')log('Opponent folds.'); else log('Opponent checks.'); return action}
+function deal(){if(coins<=0||oppCoins<=0){reset();return}deck=shuffle(ALL_CARDS);playerHand=deck.splice(0,5);oppHand=deck.splice(0,5);community=[];selected=[];pot=0;oppFolded=false;playerFolded=false;lastOpp='—';phase='draw';pay('player',bet);pay('opp',bet);log(`<span>Round ${round}: both ante <span class="gold">${bet}</span> coins.</span>`);render();buttons({label:'Draw (swap selected)',cls:'btn-primary',fn:'G.drawSwap()'},{label:'Check (keep hand)',cls:'btn-outline',fn:'G.flop()'});}
+function toggleSelect(i){if(phase!=='draw')return;let x=selected.indexOf(i);x<0?selected.push(i):selected.splice(x,1);render()}
+function drawSwap(){let n=selected.length;if(!n){log('Select cards to swap, or Check.');return}selected.sort((a,b)=>b-a).forEach(i=>{if(deck.length)playerHand[i]=deck.pop()});selected=[];log(`You swap ${n} card${n!==1?'s':''}.`);opponentDraw();flop()}
+function flop(){if(phase==='draw')opponentDraw();phase='flop';community=deck.splice(0,3);log('Flop revealed.');opponentDecision(Math.round(bet/2));render();if(oppFolded)return winByFold();buttons({label:'Bet & Turn',cls:'btn-primary',fn:'G.turn()',bet:true},{label:'Fold',cls:'btn-danger',fn:'G.fold()'});document.getElementById('bet-val').textContent=bet}
+function turn(){phase='turn';pay('player',bet);community.push(deck.pop());log(`You bet <span class="gold">${bet}</span>. Turn revealed.`);opponentDecision(bet);render();if(oppFolded)return winByFold();buttons({label:'Bet & River',cls:'btn-primary',fn:'G.river()',bet:true},{label:'Fold',cls:'btn-danger',fn:'G.fold()'})}
+function river(){phase='river';pay('player',bet);community.push(deck.pop());log(`You bet <span class="gold">${bet}</span>. River revealed.`);opponentDecision(bet);render();if(oppFolded)return winByFold();buttons({label:'Showdown!',cls:'btn-primary',fn:'G.showdown()'},{label:'Fold',cls:'btn-danger',fn:'G.fold()'})}
+function showdown(){phase='showdown';let yh=best(playerHand,community),oh=best(oppHand,community);let title,desc,emoji;if(yh.pts>oh.pts){coins+=pot;title='You win';emoji='🏆';desc=`${yh.name} beats opponent ${oh.name}. You collect ${pot} coins.`}else if(oh.pts>yh.pts){oppCoins+=pot;title='Opponent wins';emoji='🤖';desc=`Opponent ${oh.name} beats your ${yh.name}. Opponent collects ${pot} coins.`}else{let half=Math.floor(pot/2);coins+=half;oppCoins+=pot-half;title='Split pot';emoji='🤝';desc=`Both have ${yh.name}. Pot is split.`}log(`<span class="gold">Showdown: You ${yh.name} vs Opponent ${oh.name}.</span>`);pot=0;round++;render();modal(emoji,title,'',desc);buttons({label:'Next Round',cls:'btn-primary',fn:'G.deal()'})}
+function winByFold(){phase='showdown';coins+=pot;log(`<span class="gold">Opponent folded. You collect ${pot} coins.</span>`);let won=pot;pot=0;round++;render();modal('🏆','Opponent folded',`+${won}`,`You win the pot without showdown.`);buttons({label:'Next Round',cls:'btn-primary',fn:'G.deal()'})}
+function fold(){phase='showdown';oppCoins+=pot;log(`You folded. Opponent collects <span class="gold">${pot}</span> coins.`);let lost=pot;pot=0;round++;render();modal('🃏','You folded',`-${lost}`,`Opponent wins the pot.`);buttons({label:'Next Round',cls:'btn-primary',fn:'G.deal()'})}
+function adjustBet(d){bet=Math.max(5,Math.min(50,bet+d,coins));document.getElementById('bet-val').textContent=bet}
+function reset(){deck=[];playerHand=[];oppHand=[];community=[];selected=[];coins=100;oppCoins=100;pot=0;round=1;phase='deal';bet=10;lastOpp='—';oppFolded=false;finalModalShown=false;document.getElementById('log').innerHTML='New game started. Deal to begin.';buttons({label:'Deal Cards',cls:'btn-primary',fn:'G.deal()'});render()}
+function modal(e,t,s,d){document.getElementById('modal-emoji').textContent=e;document.getElementById('modal-title').textContent=t;document.getElementById('modal-score').textContent=s;document.getElementById('modal-desc').textContent=d;document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open');if((coins<=0||oppCoins<=0)&&!finalModalShown){finalModalShown=true;modal(coins>oppCoins?'🏆':'💸',coins>oppCoins?'Game won':'Game lost','',`Final coins — You: ${coins}, Opponent: ${oppCoins}`);buttons({label:'New Game',cls:'btn-primary',fn:'G.reset()'})}}
+reset();return{deal,drawSwap,toggleSelect,flop,turn,river,showdown,fold,reset,adjustBet,closeModal};})();
+</script>
+</body>
+</html>

@@ -376,7 +376,8 @@ h3 {
 .extracts .author-panel,
 .buy .author-panel,
 .resources .author-panel,
-.toc-section .author-panel {
+.toc-section .author-panel,
+.activities .author-panel {
   grid-template-columns: 1fr;
 }
 
