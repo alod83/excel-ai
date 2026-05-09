@@ -314,6 +314,25 @@ h3 {
   color: var(--ink);
 }
 
+.video-heading {
+  margin-top: 2rem;
+}
+
+.video-frame {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.video-frame iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
 .card h3,
 .timeline-card h3 {
   margin-bottom: 0.75rem;
