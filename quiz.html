@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Your AI + Excel Skills</title>
+    <meta
+      name="description"
+      content="An interactive quiz to test your ability to combine AI and Excel."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .quiz-shell {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      .quiz-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+      }
+
+      .quiz-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .quiz-question {
+        font-size: 1.35rem;
+        line-height: 1.5;
+        color: var(--ink);
+        margin-bottom: 1.5rem;
+      }
+
+      .quiz-options {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .quiz-option {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 1rem 1.1rem;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        cursor: pointer;
+        transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease,
+          background 180ms ease;
+      }
+
+      .quiz-option:hover {
+        transform: translateY(-1px);
+        border-color: rgba(179, 64, 41, 0.45);
+      }
+
+      .quiz-option.selected {
+        border-color: var(--rust);
+        background: rgba(179, 64, 41, 0.08);
+        box-shadow: 0 10px 28px rgba(46, 26, 18, 0.08);
+      }
+
+      .quiz-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .quiz-hint {
+        color: var(--muted);
+        font-size: 0.98rem;
+      }
+
+      .quiz-results {
+        display: none;
+      }
+
+      .quiz-results.open {
+        display: block;
+      }
+
+      .result-score {
+        font-family: "Avenir Next Condensed", "Arial Narrow", sans-serif;
+        font-size: clamp(2.6rem, 5vw, 4.3rem);
+        line-height: 1;
+        color: var(--rust);
+        margin: 0.5rem 0 1rem;
+      }
+
+      .result-success,
+      .result-errors {
+        margin-top: 1.5rem;
+      }
+
+      .result-errors {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .result-error {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #fff;
+        padding: 1rem 1.1rem;
+      }
+
+      .result-error h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.45rem;
+      }
+
+      .result-error p {
+        margin: 0.3rem 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .result-error strong {
+        color: var(--ink);
+      }
+
+      @media (max-width: 640px) {
+        .quiz-card {
+          padding: 1.25rem;
+        }
+
+        .quiz-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .quiz-actions .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <nav class="site-nav" aria-label="Main navigation">
+        <div class="nav-links">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="contents.html">Table of Contents</a>
+          <a class="nav-link" href="applied-fiction.html">Applied Fiction</a>
+          <details class="nav-dropdown" open>
+            <summary class="nav-link nav-link-current">Resources</summary>
+            <div class="nav-dropdown-menu">
+              <a class="nav-dropdown-link" href="activities.html">Activities</a>
+              <a class="nav-dropdown-link nav-dropdown-link-current" href="quiz.html">Quizzes</a>
+            </div>
+          </details>
+          <a class="nav-link" href="posts.html">Posts</a>
+          <a class="nav-link" href="buy.html">Buy</a>
+          <a class="nav-link" href="author.html">The Author</a>
+        </div>
+      </nav>
+
+      <header class="hero hero-secondary">
+        <div class="hero-copy">
+          <p class="eyebrow">Interactive Quiz</p>
+          <h1>Test your ability to combine AI and Excel</h1>
+          <p class="subtitle">
+            Answer one question at a time and see how strong your workflow judgment really is.
+          </p>
+        </div>
+        <div class="hero-art">
+          <div class="cover-frame concept-frame">
+            <div class="concept-panel">
+              <span class="concept-chip">AI</span>
+              <span class="concept-plus">+</span>
+              <span class="concept-chip">Excel</span>
+              <span class="concept-plus">+</span>
+              <span class="concept-chip">Reasoning</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="quiz-shell">
+        <section class="section">
+          <div id="quiz-card" class="quiz-card">
+            <div class="quiz-meta">
+              <span id="quiz-progress">Question 1 of 5</span>
+              <span id="quiz-topic">AI + Excel Skills Check</span>
+            </div>
+            <div id="quiz-question" class="quiz-question"></div>
+            <div id="quiz-options" class="quiz-options"></div>
+            <div class="quiz-actions">
+              <span class="quiz-hint" id="quiz-hint">Choose one answer to continue.</span>
+              <button id="quiz-next" class="button button-primary" disabled>Next question</button>
+            </div>
+          </div>
+
+          <div id="quiz-results" class="quiz-card quiz-results">
+            <p class="eyebrow">Results</p>
+            <h2>Your final score</h2>
+            <div id="result-score" class="result-score"></div>
+            <p id="result-summary" class="lede"></p>
+            <div id="result-success" class="result-success"></div>
+            <div id="result-errors" class="result-errors"></div>
+            <div class="hero-actions">
+              <button id="restart-quiz" class="button button-primary">Try again</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const quizData = [
+        {
+          question:
+            "An AI assistant suggests a formula that looks correct, but the same formula fails for a colleague in another country. What is the most likely reason?",
+          options: [
+            "AI-generated formulas only work in desktop Excel.",
+            "Excel may use different argument separators or localized function names.",
+            "Structured references cannot be shared across regions.",
+            "AI formulas require macros to run outside the original workbook."
+          ],
+          correct: 1,
+          explanation:
+            "Excel can vary by locale. Some regions use commas, others semicolons, and function names may also be translated, so a syntactically valid formula can still fail in another language setting."
+        },
+        {
+          question:
+            "You want AI to help analyze sales data with product categories and dates. Which prompt is most likely to produce an actionable result?",
+          options: [
+            '\"Analyze this spreadsheet and tell me something interesting.\"',
+            '\"Summarize the workbook.\"',
+            '\"Using the Sales table, identify the top 5 product categories by revenue in Q1 and suggest one chart for comparing them.\"',
+            '\"Find trends in Excel.\"'
+          ],
+          correct: 2,
+          explanation:
+            "The strongest prompt gives the model a concrete dataset reference, a clear metric, a time scope, and an expected output. That reduces ambiguity and raises the chances of getting a useful answer."
+        },
+        {
+          question:
+            "In a real Excel workflow, when does generative AI tend to add the most value?",
+          options: [
+            "When the goal is still vague but the user wants quick inspiration.",
+            "When the objective is clear, even if the technical implementation is not.",
+            "Only when the workbook already contains VBA macros.",
+            "Only when the task is purely visual rather than analytical."
+          ],
+          correct: 1,
+          explanation:
+            "AI is most effective when the user knows what they want to achieve but needs help with execution, structure, formulas, reasoning, or presentation. Clear goals make the tool far more reliable."
+        },
+        {
+          question:
+            "An AI tool suggests a chart for your dataset. What is the best standard for judging whether that suggestion is actually good?",
+          options: [
+            "It uses more data points than the alternatives.",
+            "It looks more advanced than a PivotTable.",
+            "It supports the analytical question better than the competing chart choices.",
+            "It matches the workbook theme and color palette."
+          ],
+          correct: 2,
+          explanation:
+            "A chart is only useful if it helps answer the question behind the analysis. Visual sophistication or styling is secondary to analytical fit."
+        },
+        {
+          question:
+            "Why does prompt structure matter so much when combining AI and Excel?",
+          options: [
+            "Because Excel accepts only prompts with a fixed formal syntax.",
+            "Because structured prompts reduce ambiguity and make the expected output easier to generate correctly.",
+            "Because AI can only create formulas from structured prompts.",
+            "Because unstructured prompts work only with Copilot, not with other tools."
+          ],
+          correct: 1,
+          explanation:
+            "Prompt structure matters because it clarifies the task, the context, and the format of the answer. That improves both relevance and reliability across different AI tools."
+        }
+      ];
+
+      const progressEl = document.getElementById("quiz-progress");
+      const questionEl = document.getElementById("quiz-question");
+      const optionsEl = document.getElementById("quiz-options");
+      const nextBtn = document.getElementById("quiz-next");
+      const hintEl = document.getElementById("quiz-hint");
+      const quizCardEl = document.getElementById("quiz-card");
+      const resultsEl = document.getElementById("quiz-results");
+      const scoreEl = document.getElementById("result-score");
+      const summaryEl = document.getElementById("result-summary");
+      const successEl = document.getElementById("result-success");
+      const errorsEl = document.getElementById("result-errors");
+      const restartBtn = document.getElementById("restart-quiz");
+
+      let currentQuestion = 0;
+      let selectedOption = null;
+      let answers = [];
+
+      function renderQuestion() {
+        const item = quizData[currentQuestion];
+        progressEl.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+        questionEl.textContent = item.question;
+        optionsEl.innerHTML = "";
+        selectedOption = answers[currentQuestion] ?? null;
+
+        item.options.forEach((option, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "quiz-option";
+          if (selectedOption === index) button.classList.add("selected");
+          button.innerHTML = `<strong>${String.fromCharCode(65 + index)}.</strong> ${option}`;
+          button.addEventListener("click", () => {
+            selectedOption = index;
+            answers[currentQuestion] = index;
+            [...optionsEl.children].forEach((child) => child.classList.remove("selected"));
+            button.classList.add("selected");
+            nextBtn.disabled = false;
+            hintEl.textContent =
+              currentQuestion === quizData.length - 1
+                ? "Your last answer is selected. Finish the quiz."
+                : "Answer selected. Continue when ready.";
+          });
+          optionsEl.appendChild(button);
+        });
+
+        nextBtn.disabled = selectedOption === null;
+        hintEl.textContent =
+          selectedOption === null
+            ? "Choose one answer to continue."
+            : currentQuestion === quizData.length - 1
+              ? "Your last answer is selected. Finish the quiz."
+              : "Answer selected. Continue when ready.";
+        nextBtn.textContent =
+          currentQuestion === quizData.length - 1 ? "Finish quiz" : "Next question";
+      }
+
+      function showResults() {
+        const incorrect = [];
+        let correctCount = 0;
+
+        quizData.forEach((item, index) => {
+          if (answers[index] === item.correct) {
+            correctCount += 1;
+          } else {
+            incorrect.push({
+              index,
+              question: item.question,
+              chosen: answers[index],
+              correct: item.correct,
+              explanation: item.explanation,
+              options: item.options
+            });
+          }
+        });
+
+        quizCardEl.style.display = "none";
+        resultsEl.classList.add("open");
+        scoreEl.textContent = `${correctCount} / ${quizData.length}`;
+
+        if (correctCount === quizData.length) {
+          summaryEl.textContent =
+            "Congratulations. You answered every question correctly and showed strong judgment in combining AI and Excel.";
+          successEl.innerHTML =
+            '<div class="result-error"><h3>Excellent result</h3><p>You balanced prompt quality, analytical thinking, and workflow awareness across all five questions.</p></div>';
+          errorsEl.innerHTML = "";
+        } else {
+          summaryEl.textContent =
+            `You answered ${correctCount} out of ${quizData.length} correctly. Review the questions below to see where your reasoning can become stronger.`;
+          successEl.innerHTML = "";
+          errorsEl.innerHTML = incorrect
+            .map((item) => {
+              const chosenText =
+                item.chosen === undefined
+                  ? "No answer selected"
+                  : item.options[item.chosen];
+              return `
+                <div class="result-error">
+                  <h3>Question ${item.index + 1}</h3>
+                  <p><strong>Your answer:</strong> ${chosenText}</p>
+                  <p><strong>Correct answer:</strong> ${item.options[item.correct]}</p>
+                  <p><strong>Why:</strong> ${item.explanation}</p>
+                </div>
+              `;
+            })
+            .join("");
+        }
+      }
+
+      nextBtn.addEventListener("click", () => {
+        if (selectedOption === null) return;
+        if (currentQuestion === quizData.length - 1) {
+          showResults();
+          return;
+        }
+        currentQuestion += 1;
+        renderQuestion();
+      });
+
+      restartBtn.addEventListener("click", () => {
+        currentQuestion = 0;
+        selectedOption = null;
+        answers = [];
+        resultsEl.classList.remove("open");
+        quizCardEl.style.display = "block";
+        successEl.innerHTML = "";
+        errorsEl.innerHTML = "";
+        renderQuestion();
+      });
+
+      renderQuestion();
+    </script>
+  </body>
+</html>
