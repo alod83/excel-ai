@@ -96,6 +96,7 @@ a {
 
 .nav-dropdown {
   position: relative;
+  display: inline-block;
 }
 
 .nav-dropdown summary {
@@ -116,8 +117,11 @@ a {
 .nav-dropdown-menu {
   position: absolute;
   top: calc(100% + 0.55rem);
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   min-width: 220px;
+  width: max-content;
+  max-width: min(280px, calc(100vw - 3rem));
   padding: 0.5rem;
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -522,9 +526,9 @@ h3 {
   }
 
   .nav-dropdown-menu {
-    position: static;
-    min-width: 0;
-    margin-top: 0.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: min(260px, calc(100vw - 2rem));
   }
 
   .hero,
